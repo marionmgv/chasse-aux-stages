@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chasse aux stages – CAP EPC</title>
+<style>
+:root{--bg:#fff8ef;--ink:#1f2a44;--muted:#5d6782;--card:#fff;--line:#eadfce;--a:#ff6b4a;--b:#2a9d8f;--c:#5a4fcf;--y:#ffc94a;--ok:#2e9e5b;--mid:#e3a21a;--low:#c9c2b6}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--ink);color:#fff;padding:18px 20px 14px;position:relative}
+header h1{margin:0;font-size:1.6rem;letter-spacing:.3px}
+header h1 span{color:var(--y)}
+header p{margin:4px 0 0;color:#c8cfe3;font-size:.95rem}
+.tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.tab{background:#2f3b5c;color:#fff;border:0;border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;font-size:.92rem}
+.tab.on{background:var(--y);color:var(--ink)}
+.tab .count{background:var(--a);color:#fff;border-radius:999px;padding:1px 7px;margin-left:4px;font-size:.8rem}
+main{max-width:1200px;margin:0 auto;padding:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px}
+.search{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.search input[type=search]{flex:1 1 260px;font-size:1.05rem;padding:11px 14px;border:2px solid var(--line);border-radius:12px;outline:none}
+.search input[type=search]:focus{border-color:var(--b)}
+.btn{border:0;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:.95rem;background:#eef0f6;color:var(--ink)}
+.btn.primary{background:var(--a);color:#fff}
+.btn.teal{background:var(--b);color:#fff}
+.btn.violet{background:var(--c);color:#fff}
+.btn:hover{filter:brightness(.95)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+.label{font-weight:700;font-size:.85rem;color:var(--muted);margin-right:2px;min-width:70px}
+.chip{border:2px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;cursor:pointer;font-size:.88rem;font-weight:600;color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+select{padding:7px 10px;border-radius:10px;border:2px solid var(--line);font-size:.9rem;background:#fff}
+.bloc{display:inline-flex;align-items:center;gap:6px;background:#f6f2ea;border-radius:12px;padding:4px 8px}
+.bloc b{font-size:.82rem}
+.result-bar{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 10px;color:var(--muted);flex-wrap:wrap;gap:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;position:relative;transition:transform .12s, box-shadow .12s}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(31,42,68,.08)}
+.card .top{display:flex;gap:10px;align-items:flex-start}
+.emoji{font-size:1.9rem;line-height:1;background:#fff3e2;border-radius:12px;padding:8px}
+.card h3{margin:0;font-size:1.08rem}
+.card .cat{color:var(--muted);font-size:.86rem}
+.card .addr{font-size:.88rem}
+.tags{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:.75rem;border-radius:999px;padding:2px 8px;background:#eef0f6;font-weight:600}
+.tag.zone{background:#e5f4f2;color:#1d6f65}
+.tag.st-oui{background:#dff3e7;color:#1d7a45}
+.tag.st-non{background:#fde2dc;color:#a33b25}
+.tag.st-nsp{background:#f1eee8;color:#6d655a}
+.fit{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.fit div{font-size:.72rem;text-align:center;border-radius:8px;padding:4px 2px;font-weight:700}
+.f3{background:#dff3e7;color:#1d7a45}.f2{background:#fff1cf;color:#8a5d00}.f1{background:#f1eee8;color:#857c6f}.f0{background:#eef0f6;color:#5d6782}
+.actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.actions a,.actions button{text-decoration:none;font-size:.85rem;font-weight:700;border-radius:10px;padding:7px 10px;border:0;cursor:pointer}
+.a-tel{background:var(--b);color:#fff}.a-web{background:var(--c);color:#fff}.a-map{background:#eef0f6;color:var(--ink)}
+.star{position:absolute;top:10px;right:10px;background:none;border:0;font-size:1.4rem;cursor:pointer;filter:grayscale(1);opacity:.5}
+.star.on{filter:none;opacity:1}
+.empty{text-align:center;color:var(--muted);padding:40px}
+.hidden{display:none!important}
+/* Mystère */
+.mystery{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.mystery .big{font-size:3rem}
+.flash{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.9);opacity:.3}100%{transform:scale(1);opacity:1}}
+/* Sélection */
+.sel-item{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px dashed var(--line);padding:10px 0}
+.sel-item textarea{width:100%;min-height:52px;border:1px solid var(--line);border-radius:10px;padding:8px;font-family:inherit;font-size:.9rem}
+/* Prof */
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th,td{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+th{background:#f6f2ea;position:sticky;top:0}
+.tablewrap{max-height:60vh;overflow:auto;border:1px solid var(--line);border-radius:12px}
+form.edit{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+form.edit label{display:flex;flex-direction:column;font-size:.82rem;font-weight:700;color:var(--muted);gap:4px}
+form.edit input,form.edit select,form.edit textarea{font-size:.95rem;padding:8px;border:2px solid var(--line);border-radius:10px;font-family:inherit;font-weight:400;color:var(--ink)}
+.notice{background:#fff7e0;border:1px solid #f1d58a;border-radius:12px;padding:10px 12px;font-size:.88rem}
+.dirty{color:#a33b25;font-weight:700}
+@media print{header .tabs,.no-print,.star{display:none!important}body{background:#fff}.panel{border:0}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔎 Chasse aux <span>stages</span></h1>
+  <p>Trouve l'entreprise idéale pour ta PFMP — CAP Équipier polyvalent du commerce</p>
+  <div class="tabs">
+    <button class="tab on" data-view="search">🗂️ Rechercher</button>
+    <button class="tab" data-view="mystery">🎲 Magasin mystère</button>
+    <button class="tab" data-view="selection">⭐ Ma sélection <span class="count" id="selCount">0</span></button>
+    <button class="tab" data-view="prof">🔒 Espace enseignant</button>
+  </div>
+</header>
+
+<main>
+<!-- RECHERCHE -->
+<section id="view-search">
+  <div class="panel">
+    <div class="search">
+      <input type="search" id="q" placeholder="Tape un nom, une rue, un type de magasin… (ex : chaussures, Steel, Lidl)">
+      <button class="btn" id="reset">↺ Tout effacer</button>
+    </div>
+    <div class="row"><span class="label">📍 Zone</span><div id="zones" class="row" style="margin:0"></div></div>
+    <div class="row"><span class="label">🏷️ Famille</span><div id="familles" class="row" style="margin:0"></div></div>
+    <div class="row"><span class="label">🧩 Blocs</span>
+      <span class="bloc"><b>Bloc 1 · Commandes</b><select id="b1"></select></span>
+      <span class="bloc"><b>Bloc 2 · Mise en valeur</b><select id="b2"></select></span>
+      <span class="bloc"><b>Bloc 3 · Conseil client</b><select id="b3"></select></span>
+    </div>
+    <div class="row"><span class="label">🎓 Stagiaires</span><div id="stag" class="row" style="margin:0"></div>
+      <label style="margin-left:10px;font-size:.9rem"><input type="checkbox" id="onlyTel"> 📞 seulement avec téléphone</label>
+    </div>
+  </div>
+  <div class="result-bar"><span id="count"></span>
+    <span>Trier : <select id="sort"><option value="zone">par zone</option><option value="nom">par nom (A→Z)</option><option value="fit">les plus adaptés au CAP d'abord</option></select></span></div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<!-- MYSTERE -->
+<section id="view-mystery" class="hidden">
+  <div class="panel">
+    <h2 style="margin-top:0">🎲 Le magasin mystère</h2>
+    <p>Pas d'idée ? Laisse le hasard choisir pour toi ! Tu peux garder les filtres de la recherche ou tirer dans toute la liste.</p>
+    <div class="row">
+      <button class="btn primary" id="draw">🎲 Tirer un magasin</button>
+      <label style="font-size:.9rem"><input type="checkbox" id="useFilters" checked> utiliser mes filtres de recherche</label>
+    </div>
+  </div>
+  <div id="mysteryOut"></div>
+  <div class="panel">
+    <h3 style="margin-top:0">🧠 Défi : prépare ton appel !</h3>
+    <ol id="challenge" style="margin:0;padding-left:20px;line-height:1.7">
+      <li>Que vend ce magasin ? Qui sont ses clients ?</li>
+      <li>Quelles activités du CAP EPC pourrais-tu y faire (réception, mise en rayon, conseil…) ?</li>
+      <li>Écris ta phrase d'accroche : « Bonjour, je m'appelle… je suis en CAP EPC au lycée Notre-Dame des Collines… »</li>
+      <li>Ajoute-le à ta sélection ⭐ et note ce que tu veux dire.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- SELECTION -->
+<section id="view-selection" class="hidden">
+  <div class="panel">
+    <h2 style="margin-top:0">⭐ Ma sélection</h2>
+    <p class="no-print">Clique sur l'étoile d'une fiche pour l'ajouter ici. Note pour chaque entreprise <b>pourquoi elle t'intéresse</b> et <b>le résultat de ton appel</b>. Ta sélection reste dans ce navigateur.</p>
+    <div class="row no-print">
+      <label>Mon prénom : <input id="eleve" style="padding:7px;border-radius:10px;border:2px solid var(--line)"></label>
+      <button class="btn teal" onclick="window.print()">🖨️ Imprimer ma liste</button>
+      <button class="btn" id="clearSel">🗑️ Vider</button>
+    </div>
+    <h3 class="hidden" id="printName"></h3>
+    <div id="selList"></div>
+  </div>
+</section>
+
+<!-- PROF -->
+<section id="view-prof" class="hidden">
+  <div class="panel" id="lock">
+    <h2 style="margin-top:0">🔒 Espace enseignant</h2>
+    <p>Entrez le code enseignant.</p>
+    <div class="row"><input type="password" id="code" style="padding:9px;border-radius:10px;border:2px solid var(--line)"><button class="btn violet" id="unlock">Entrer</button><span id="codeMsg" style="color:#a33b25"></span></div>
+  </div>
+  <div id="profZone" class="hidden">
+    <div class="panel notice">
+      <b>Comment ça marche :</b> modifiez, ajoutez ou supprimez des fiches ci-dessous, puis cliquez sur <b>« 💾 Télécharger le logiciel mis à jour »</b>. Vous obtenez un nouveau fichier HTML avec vos modifications, à redistribuer aux élèves (ENT, clé USB, mail).
+      Vos modifications sont aussi gardées en brouillon dans ce navigateur. <span id="dirty"></span>
+    </div>
+    <div class="panel">
+      <div class="row" style="margin-top:0">
+        <button class="btn primary" id="exportHtml">💾 Télécharger le logiciel mis à jour</button>
+        <button class="btn" id="exportCsv">📄 Exporter en CSV (tableur)</button>
+        <button class="btn teal" id="addNew">➕ Ajouter un magasin</button>
+        <button class="btn" id="discard">↩️ Annuler mes brouillons</button>
+        <button class="btn" id="chgCode">🔑 Changer le code</button>
+      </div>
+      <div class="row"><input type="search" id="pq" placeholder="Filtrer la liste…" style="flex:1;padding:9px;border-radius:10px;border:2px solid var(--line)">
+        <label style="font-size:.9rem"><input type="checkbox" id="missing"> seulement sans téléphone</label></div>
+    </div>
+    <div class="panel hidden" id="editor">
+      <h3 style="margin-top:0" id="edTitle">Modifier</h3>
+      <form class="edit" id="edForm">
+        <label>Enseigne *<input name="nom" required></label>
+        <label>Zone<select name="zone" id="edZone"></select></label>
+        <label>Famille<input name="famille" list="famList"></label>
+        <label>Catégorie<input name="categorie"></label>
+        <label style="grid-column:1/-1">Adresse<input name="adresse"></label>
+        <label>Secteur<input name="secteur"></label>
+        <label>A déjà pris des stagiaires<select name="stagiaires"><option>On ne sait pas</option><option>oui</option><option>non</option></select></label>
+        <label>📞 Téléphone<input name="tel" placeholder="04 77 .. .. .."></label>
+        <label>🌐 Site internet<input name="site" placeholder="https://…"></label>
+        <label>Bloc 1 – Commandes<select name="b1" class="lvl"></select></label>
+        <label>Bloc 2 – Mise en valeur<select name="b2" class="lvl"></select></label>
+        <label>Bloc 3 – Conseil client<select name="b3" class="lvl"></select></label>
+        <label style="grid-column:1/-1">Note interne / contact (visible par les élèves)<textarea name="notes" rows="2" placeholder="ex : demander M. X, tuteur ; prend 2 stagiaires/an"></textarea></label>
+        <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn primary" type="submit">✔️ Enregistrer</button>
+          <button class="btn" type="button" id="edCancel">Annuler</button>
+          <button class="btn" type="button" id="edDelete" style="background:#fde2dc;color:#a33b25;margin-left:auto">🗑️ Supprimer cette fiche</button>
+        </div>
+      </form>
+      <datalist id="famList"></datalist>
+    </div>
+    <div class="panel">
+      <div class="tablewrap"><table><thead><tr><th>Zone</th><th>Enseigne</th><th>Catégorie</th><th>Adresse</th><th>Stagiaires</th><th>Tél.</th><th>Site</th><th></th></tr></thead><tbody id="ptable"></tbody></table></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<script id="store-data" type="application/json">[{"zone": "Saint-Étienne", "nom": "Darjeeling", "famille": "Mode, chaussures et accessoires", "categorie": "Lingerie", "adresse": "1 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.darjeeling.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Promod", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "2 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.promod.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Flying Tiger Copenhagen", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déco / cadeaux", "adresse": "2 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 57 91 20", "site": "https://flyingtiger.com/fr-fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Comptoir des Cotonniers", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "3 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.comptoirdescotonniers.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Etam", "famille": "Mode, chaussures et accessoires", "categorie": "Lingerie / mode femme", "adresse": "3 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.etam.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Gérard Darel", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "3 bis rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.gerarddarel.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Histoire d'Or", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "8 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "04 77 34 42 35", "site": "https://www.histoiredor.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "SFR", "famille": "High-tech, électroménager, téléphonie", "categorie": "Téléphonie", "adresse": "12 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Peu adapté", "b3": "Très adapté", "tel": "", "site": "https://www.sfr.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Monoprix", "famille": "Alimentation", "categorie": "Supermarché / grand magasin", "adresse": "20 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.monoprix.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Chérie Chéri Homme", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "17 rue des Martyrs de Vingré, 42000", "secteur": "Rue des Martyrs de Vingré", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "06 31 17 96 44", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Chérie Chéri", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "32 rue des Martyrs de Vingré, 42000", "secteur": "Rue des Martyrs de Vingré", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Oliver Grant", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "13 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Swarovski", "famille": "Mode, chaussures et accessoires", "categorie": "Bijoux", "adresse": "19 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.swarovski.com/fr-FR", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lacoste", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "23 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.lacoste.com/fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Jacadi", "famille": "Mode, chaussures et accessoires", "categorie": "Mode enfant", "adresse": "23 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jacadi.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lancel", "famille": "Mode, chaussures et accessoires", "categorie": "Maroquinerie", "adresse": "3 rue de la République, 42000", "secteur": "Rue de la République", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.lancel.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Sylvie Thiriez", "famille": "Mode, chaussures et accessoires", "categorie": "Lingerie / mode", "adresse": "14 rue de la République, 42000", "secteur": "Rue de la République", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.sylvie-thiriez.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Un Jour Ailleurs", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "2 rue Alsace-Lorraine, 42000", "secteur": "Rue Alsace-Lorraine", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.unjourailleurs.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Boutique Free", "famille": "High-tech, électroménager, téléphonie", "categorie": "Téléphonie", "adresse": "3 place du Peuple, 42000", "secteur": "Place du Peuple", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Peu adapté", "b3": "Très adapté", "tel": "", "site": "https://www.free.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Aigle", "famille": "Mode, chaussures et accessoires", "categorie": "Mode / outdoor", "adresse": "6 place du Peuple, 42000", "secteur": "Place du Peuple", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.aigle.com/fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Jules", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "8 place de l'Hôtel de Ville, 42000", "secteur": "Place de l'Hôtel de Ville", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jules.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Superdry", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Rue Léon Nautin", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.superdry.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Game Cash", "famille": "High-tech, électroménager, téléphonie", "categorie": "Jeux vidéo (occasion)", "adresse": "2 rue Michel Rondet, 42000", "secteur": "Rue Michel Rondet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.gamecash.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Librairie Forum", "famille": "Culture, loisirs, sport, enfance", "categorie": "Librairie", "adresse": "5 rue Michel Rondet, 42000", "secteur": "Rue Michel Rondet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lune et l'Autre", "famille": "Culture, loisirs, sport, enfance", "categorie": "Librairie", "adresse": "19 rue Pierre Bérard, 42000", "secteur": "Rue Pierre Bérard", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Pronuptia", "famille": "Mode, chaussures et accessoires", "categorie": "Mariage / cérémonie", "adresse": "6 rue Sainte-Catherine, 42000", "secteur": "Rue Sainte-Catherine", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.pronuptia.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Satoriz", "famille": "Alimentation", "categorie": "Épicerie bio", "adresse": "5 rue Marc Charras, 42100", "secteur": "Rue Marc Charras", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.satoriz.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Auchan", "famille": "Alimentation", "categorie": "Hypermarché", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.auchan.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Action", "famille": "Maison, déco, bricolage, jardin", "categorie": "Discount maison", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Peu adapté", "tel": "", "site": "https://www.action.com/fr-fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Primark", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.primark.com/fr-fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bershka", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.bershka.com/fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "H&M", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www2.hm.com/fr_fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Armand Thiery Femme", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.armandthiery.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Armand Thiery Homme", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.armandthiery.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bonobo", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.bonoboplanet.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Cache Cache", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.cache-cache.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Jules", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jules.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Undiz", "famille": "Mode, chaussures et accessoires", "categorie": "Lingerie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.undiz.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Foot Locker", "famille": "Mode, chaussures et accessoires", "categorie": "Sport / sneakers", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.footlocker.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "JD Sports", "famille": "Mode, chaussures et accessoires", "categorie": "Sport / sneakers", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jdsports.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Courir", "famille": "Mode, chaussures et accessoires", "categorie": "Sport / sneakers", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.courir.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Claire's", "famille": "Mode, chaussures et accessoires", "categorie": "Bijoux / accessoires", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.claires.com/fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Parfois", "famille": "Mode, chaussures et accessoires", "categorie": "Accessoires", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.parfois.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Cleor", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.cleor.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Histoire d'Or", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "04 77 80 82 99", "site": "https://www.histoiredor.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Jacqueline Riu", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jacquelineriu.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bouygues Telecom", "famille": "High-tech, électroménager, téléphonie", "categorie": "Téléphonie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Peu adapté", "b3": "Très adapté", "tel": "", "site": "https://www.bouyguestelecom.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Free", "famille": "High-tech, électroménager, téléphonie", "categorie": "Téléphonie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Peu adapté", "b3": "Très adapté", "tel": "", "site": "https://www.free.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Micromania", "famille": "High-tech, électroménager, téléphonie", "categorie": "Jeux vidéo", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.micromania.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Leroy Merlin", "famille": "Maison, déco, bricolage, jardin", "categorie": "Bricolage", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.leroymerlin.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Decathlon", "famille": "Culture, loisirs, sport, enfance", "categorie": "Sport", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.decathlon.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Boulanger", "famille": "High-tech, électroménager, téléphonie", "categorie": "Électroménager / high-tech", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.boulanger.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Maisons du Monde", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déco / meubles", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.maisonsdumonde.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Mango", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "oui", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://shop.mango.com/fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "H&M", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www2.hm.com/fr_fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Gémo", "famille": "Mode, chaussures et accessoires", "categorie": "Mode / chaussures", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "04 77 12 52 89", "site": "https://www.gemo.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Besson Chaussures", "famille": "Mode, chaussures et accessoires", "categorie": "Chaussures", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "oui", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.besson-chaussures.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bizzbee", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.bizzbee.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "MOA", "famille": "Mode, chaussures et accessoires", "categorie": "Bijoux / accessoires", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.moa.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Orchestra", "famille": "Mode, chaussures et accessoires", "categorie": "Mode enfant / puériculture", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.orchestra.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Action", "famille": "Maison, déco, bricolage, jardin", "categorie": "Discount maison", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Peu adapté", "tel": "", "site": "https://www.action.com/fr-fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Flying Tiger Copenhagen", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déco / cadeaux", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://flyingtiger.com/fr-fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Histoire d'Or", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "04 77 21 85 28", "site": "https://www.histoiredor.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Auchan (ex-Casino Monthieu)", "famille": "Alimentation", "categorie": "Hypermarché", "adresse": "Allée Alexandre Dumas, 42100", "secteur": "Monthieu", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.auchan.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Nature & Découvertes", "famille": "Culture, loisirs, sport, enfance", "categorie": "Cadeaux / nature", "adresse": "Galerie Monthieu, allée Alexandre Dumas, 42100", "secteur": "Monthieu", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.natureetdecouvertes.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Fnac Monthieu", "famille": "Culture, loisirs, sport, enfance", "categorie": "Culture / high-tech", "adresse": "Allée Alexandre Dumas, 42100", "secteur": "Monthieu", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.fnac.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Electro Dépôt", "famille": "High-tech, électroménager, téléphonie", "categorie": "Électroménager", "adresse": "Centre commercial Monthieu, allée Alexandre Dumas, 42100", "secteur": "Monthieu", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Adapté", "b3": "Adapté", "tel": "", "site": "https://www.electrodepot.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Maison Cornand", "famille": "Alimentation", "categorie": "Épicerie fine (pâtes fraîches)", "adresse": "5 rue Pointe-Cadet, 42000", "secteur": "Hypercentre", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "04 77 32 90 45", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Weiss (boutique)", "famille": "Alimentation", "categorie": "Chocolaterie", "adresse": "8 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "04 77 21 61 09", "site": "https://www.chocolat-weiss.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Le Comptoir de Mathilde", "famille": "Alimentation", "categorie": "Épicerie fine", "adresse": "8 rue Saint-Jean, 42000", "secteur": "Rue Saint-Jean", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Sucré Salé", "famille": "Alimentation", "categorie": "Épicerie fine", "adresse": "6 rue Louis Braille, 42000", "secteur": "Place Dorian", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Casino Shop", "famille": "Alimentation", "categorie": "Supérette", "adresse": "Place du Peuple, 42000", "secteur": "Place du Peuple", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Intermarché Super Bergson", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "60 rue Bergson, 42000", "secteur": "Carnot / Bergson", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Carrefour City", "famille": "Alimentation", "categorie": "Supérette", "adresse": "52 boulevard Alexandre de Fraissinette, 42100", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 46 09 51", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Biocoop Les Arcades", "famille": "Alimentation", "categorie": "Épicerie bio", "adresse": "13 rue du Président Wilson, 42000", "secteur": "Hypercentre", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 41 64 65", "site": "https://www.biocoop.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Biocoop Saint-Roch", "famille": "Alimentation", "categorie": "Épicerie bio", "adresse": "44-48 rue du Vernay, 42100", "secteur": "Saint-Roch", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.biocoop.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Robin Chaussures", "famille": "Mode, chaussures et accessoires", "categorie": "Chaussures", "adresse": "15 rue José Frappa / 18 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Chaussea", "famille": "Mode, chaussures et accessoires", "categorie": "Chaussures", "adresse": "Rue des Rochettes, 42100", "secteur": "Monthieu", "stagiaires": "oui", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.chaussea.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Boutique Orange Foy", "famille": "High-tech, électroménager, téléphonie", "categorie": "Téléphonie", "adresse": "13 rue du Général Foy, 42000", "secteur": "Rue du Général Foy", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Peu adapté", "b3": "Très adapté", "tel": "", "site": "https://boutique.orange.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Escanez", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie / horlogerie", "adresse": "8 avenue de la Libération, 42000", "secteur": "Avenue de la Libération", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bijouterie Eric Duny", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "7 rue du Président Wilson, 42000", "secteur": "Hypercentre", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Marc Orian", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "Centre Deux, 1-7 rue des Docteurs Charcot, 42100", "secteur": "Centre Deux", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.marc-orian.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Banque du Livre", "famille": "Culture, loisirs, sport, enfance", "categorie": "Librairie (occasion)", "adresse": "27 rue de la Ville, 42000", "secteur": "Hypercentre", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "La Papéthèque", "famille": "Culture, loisirs, sport, enfance", "categorie": "Presse / tabac", "adresse": "2 rue Balay, 42000", "secteur": "Hypercentre", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Au Tapis Vert", "famille": "Culture, loisirs, sport, enfance", "categorie": "Jouets / jeux de société", "adresse": "9 rue de la République, 42000", "secteur": "Rue de la République", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.autapisvert.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "P'tit Loustic", "famille": "Culture, loisirs, sport, enfance", "categorie": "Jouets", "adresse": "5 rue Mercière, 42000", "secteur": "Rue Mercière", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "King Jouet", "famille": "Culture, loisirs, sport, enfance", "categorie": "Jouets", "adresse": "Centre commercial Steel, 2 rue Ferrer, 42000", "secteur": "Steel", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.king-jouet.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Sandro", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "22 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://fr.sandro-paris.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Gant", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "22 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.gant.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Bérénice", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "20 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.berenice.net", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Havane", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "15 rue Michelet, 42000", "secteur": "Rue Michelet", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Kaporal", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "13 rue Gambetta, 42000", "secteur": "Rue Gambetta", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.kaporal.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Vertbaudet", "famille": "Mode, chaussures et accessoires", "categorie": "Mode enfant", "adresse": "4 place Dorian, 42000", "secteur": "Place Dorian", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.vertbaudet.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Indigo", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "29 avenue de la Libération, 42000", "secteur": "Avenue de la Libération", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Boutique des Verts (ASSE)", "famille": "Culture, loisirs, sport, enfance", "categorie": "Sport / boutique officielle", "adresse": "6 rue Paul et Pierre Guichard, 42000", "secteur": "Geoffroy-Guichard", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "04 77 92 31 70", "site": "https://boutique.asse.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "5 rue Jean-Jacques Rousseau, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "10-12 place Fourneyron, 42000", "secteur": "Hypercentre", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "2 rue Marcel Proust, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "19-21 rue Parmentier, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "4 rue Auguste Guitton, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "30 boulevard Jules Janin, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "2 rue Henri Brisson, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Aldi", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "Rue de Lyon, Les Fourches (Terrenoire), 42100", "secteur": "Terrenoire", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.aldi.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Netto", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "35 rue Tiblier-Verne, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.netto.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Netto", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "7 rue Marcel Féguide (La Marandinière), 42100", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.netto.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Intermarché", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "15 rue Nicolas Chaize, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Intermarché Super", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "4 rue Robert Cancet, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Intermarché Super (Parc Giron)", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "14 rue de la Richelandière, 42100", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 43 59 00", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Auchan Supermarché", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "2 rue Alexandre Pourcel, 42000", "secteur": "Saint-Étienne (quartiers)", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.auchan.fr", "notes": ""}, {"zone": "Saint-Étienne", "nom": "Carrefour Market", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "93-97 boulevard Normandie-Niemen, 42100", "secteur": "Montplaisir", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Boutique Bambou", "famille": "Services et divers", "categorie": "Boutique (à préciser)", "adresse": "45 rue Jean Jaurès, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – centre", "stagiaires": "On ne sait pas", "b1": "À préciser", "b2": "À préciser", "b3": "À préciser", "tel": "", "site": "", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Mado et les Autres", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "17 rue Jules Guesde, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – centre", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Carrefour Market", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "Rue Jean-Baptiste Berlier, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 83 72 43", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Intermarché Super", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "Avenue du Maréchal Juin, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Bricomarché", "famille": "Maison, déco, bricolage, jardin", "categorie": "Bricolage", "adresse": "20 avenue Charles de Gaulle (ZAC Brunon Valette), 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.bricomarche.com/magasin/rive-de-gier/06710", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Monsieur Meuble (Meubles Dufour)", "famille": "Maison, déco, bricolage, jardin", "categorie": "Meubles / cuisines / literie", "adresse": "36 route de Saint-Genis, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Carrefour Market", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "2 rue d'Assailly, 42420 Lorette", "secteur": "Lorette", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 73 19 24", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Super U", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "38 ter avenue Pasteur, 42152 L'Horme", "secteur": "L'Horme", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 22 51 86", "site": "https://www.magasins-u.com", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Maison Dorey", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "27 rue Jean Jaurès, 42420 Lorette", "secteur": "Lorette", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "63 rue Pétrus Richarme, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Netto", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "7C boulevard des Provinces, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.netto.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Intermarché", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "10 rue Émile Zola, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – centre", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Biocoop", "famille": "Alimentation", "categorie": "Supermarché bio", "adresse": "Rue Jean-Baptiste Berlier, 42800 Rive-de-Gier", "secteur": "Rive-de-Gier – périphérie", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.biocoop.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Aldi", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "4 avenue Pasteur, 42152 L'Horme", "secteur": "L'Horme", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.aldi.fr", "notes": ""}, {"zone": "Rive-de-Gier & alentours", "nom": "Intermarché Super", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "38 avenue Berthelot, rue du Plat de Gier, 42152 L'Horme", "secteur": "L'Horme", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 29 86 40", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Z", "famille": "Mode, chaussures et accessoires", "categorie": "Mode enfant", "adresse": "48 rue de la République, 42400 Saint-Chamond", "secteur": "Rue de la République", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.z.fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Devred", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "10 place de la Liberté, 42400 Saint-Chamond", "secteur": "Place de la Liberté", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.devred.com", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Zeeman", "famille": "Mode, chaussures et accessoires", "categorie": "Textile discount", "adresse": "6 rue Pierre Curie, 42400 Saint-Chamond", "secteur": "Centre-ville", "stagiaires": "oui", "b1": "Adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.zeeman.com/fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Intermarché", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "8 rue Pierre Curie, 42400 Saint-Chamond", "secteur": "Centre-ville", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Saveurs de nos Fermes", "famille": "Alimentation", "categorie": "Magasin de producteurs", "adresse": "23 avenue Jules Ferry, 42400 Saint-Chamond", "secteur": "Saint-Chamond", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Chamond", "nom": "E.Leclerc", "famille": "Alimentation", "categorie": "Hypermarché", "adresse": "Route de la Varizelle, 42400 Saint-Chamond", "secteur": "ZAC de la Varizelle", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "04 77 31 02 70", "site": "https://www.e.leclerc/mag/e-leclerc-saint-chamond", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Le Manège à Bijoux (Leclerc)", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "Galerie E.Leclerc, la Varizelle, 42400 Saint-Chamond", "secteur": "ZAC de la Varizelle", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Gamm Vert", "famille": "Maison, déco, bricolage, jardin", "categorie": "Jardinerie", "adresse": "ZAC de la Varizelle, 42400 Saint-Chamond", "secteur": "ZAC de la Varizelle", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.gammvert.fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Gifi", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déco / discount", "adresse": "Rue du 17 Octobre 1961, ZAC de la Varizelle, 42400 Saint-Chamond", "secteur": "ZAC de la Varizelle", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Peu adapté", "tel": "", "site": "https://www.gifi.fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "2 rue Edmond Locard, 42400 Saint-Chamond", "secteur": "Saint-Chamond", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Grand Frais", "famille": "Alimentation", "categorie": "Alimentation (produits frais)", "adresse": "Rue Montdragon, 42400 Saint-Chamond", "secteur": "Saint-Chamond", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.grandfrais.com", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Carrefour Market", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "Saint-Chamond (adresse à préciser), 42400 Saint-Chamond", "secteur": "Saint-Chamond", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Saint-Chamond", "nom": "Netto", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "Saint-Chamond (adresse à préciser), 42400 Saint-Chamond", "secteur": "Saint-Chamond", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.netto.fr", "notes": ""}, {"zone": "Givors", "nom": "Carrefour", "famille": "Alimentation", "categorie": "Hypermarché", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Givors", "nom": "Castorama", "famille": "Maison, déco, bricolage, jardin", "categorie": "Bricolage", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.castorama.fr", "notes": ""}, {"zone": "Givors", "nom": "Noz", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déstockage", "adresse": "Rue de la Paix, zone Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "oui", "b1": "Très adapté", "b2": "Très adapté", "b3": "Peu adapté", "tel": "", "site": "https://www.noz.fr", "notes": ""}, {"zone": "Givors", "nom": "Celio", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "24 rue de la Paix, CC Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.celio.com", "notes": ""}, {"zone": "Givors", "nom": "Princesse Boutique", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "20 rue de la Paix, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "", "notes": ""}, {"zone": "Givors", "nom": "Bureau Vallée", "famille": "Culture, loisirs, sport, enfance", "categorie": "Papeterie / fournitures", "adresse": "26 rue de la Paix, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.bureau-vallee.fr", "notes": ""}, {"zone": "Givors", "nom": "Darty", "famille": "High-tech, électroménager, téléphonie", "categorie": "Électroménager / high-tech", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.darty.com", "notes": ""}, {"zone": "Givors", "nom": "Cultura", "famille": "Culture, loisirs, sport, enfance", "categorie": "Culture / loisirs créatifs", "adresse": "Zone commerciale Les 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.cultura.com", "notes": ""}, {"zone": "Givors", "nom": "King Jouet", "famille": "Culture, loisirs, sport, enfance", "categorie": "Jouets", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.king-jouet.com", "notes": ""}, {"zone": "Givors", "nom": "Autour de Bébé", "famille": "Culture, loisirs, sport, enfance", "categorie": "Puériculture", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.autourdebebe.com", "notes": ""}, {"zone": "Givors", "nom": "Go Sport", "famille": "Culture, loisirs, sport, enfance", "categorie": "Sport", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.go-sport.com", "notes": ""}, {"zone": "Givors", "nom": "Jules", "famille": "Mode, chaussures et accessoires", "categorie": "Mode homme", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.jules.com", "notes": ""}, {"zone": "Givors", "nom": "Promod", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "Centre commercial Givors 2 Vallées, rue de la Paix, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.promod.fr", "notes": ""}, {"zone": "Givors", "nom": "Etam", "famille": "Mode, chaussures et accessoires", "categorie": "Lingerie / mode femme", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.etam.com", "notes": ""}, {"zone": "Givors", "nom": "Pimkie", "famille": "Mode, chaussures et accessoires", "categorie": "Mode femme", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.pimkie.fr", "notes": ""}, {"zone": "Givors", "nom": "Kiabi", "famille": "Mode, chaussures et accessoires", "categorie": "Mode", "adresse": "ZI de la Vallée du Gier, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.kiabi.com", "notes": ""}, {"zone": "Givors", "nom": "La Halle", "famille": "Mode, chaussures et accessoires", "categorie": "Mode / chaussures", "adresse": "Rue de la Paix, Plaine du Gier, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Très adapté", "b3": "Très adapté", "tel": "", "site": "https://www.lahalle.com", "notes": ""}, {"zone": "Givors", "nom": "Histoire d'Or", "famille": "Mode, chaussures et accessoires", "categorie": "Bijouterie", "adresse": "CC Givors 2 Vallées, rue de la Paix, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Peu adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.histoiredor.com", "notes": ""}, {"zone": "Givors", "nom": "Gifi", "famille": "Maison, déco, bricolage, jardin", "categorie": "Déco / discount", "adresse": "ZI de la Vallée du Gier, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Peu adapté", "tel": "", "site": "https://www.gifi.fr", "notes": ""}, {"zone": "Givors", "nom": "Saint Maclou", "famille": "Maison, déco, bricolage, jardin", "categorie": "Sols / déco", "adresse": "Centre commercial Givors 2 Vallées, 69700 Givors", "secteur": "Givors 2 Vallées", "stagiaires": "On ne sait pas", "b1": "Adapté", "b2": "Adapté", "b3": "Très adapté", "tel": "", "site": "https://www.saint-maclou.com", "notes": ""}, {"zone": "Givors", "nom": "Grand Frais", "famille": "Alimentation", "categorie": "Alimentation (produits frais)", "adresse": "17-19 rue Robespierre, 69700 Givors", "secteur": "Givors", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.grandfrais.com", "notes": ""}, {"zone": "Givors", "nom": "Intermarché Super", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "3 rue de la Fraternité, 69700 Givors", "secteur": "Givors", "stagiaires": "On ne sait pas", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.intermarche.com", "notes": ""}, {"zone": "Givors", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "Place de Bans / 4 avenue Anatole France, 69700 Givors", "secteur": "Givors", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Givors", "nom": "Lidl", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "1 bis allée Nelson Mandela, 69700 Givors", "secteur": "Givors", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lidl.fr", "notes": ""}, {"zone": "Givors", "nom": "Aldi", "famille": "Alimentation", "categorie": "Supermarché discount", "adresse": "18 rue de l'Industrie, 69700 Givors", "secteur": "Givors", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.aldi.fr", "notes": ""}, {"zone": "Givors", "nom": "Carrefour (centre)", "famille": "Alimentation", "categorie": "Supermarché", "adresse": "65 rue Fleury Neuvesel, 69700 Givors", "secteur": "Givors", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.carrefour.fr", "notes": ""}, {"zone": "Givors", "nom": "La Vie Claire", "famille": "Alimentation", "categorie": "Supermarché bio", "adresse": "17 chemin des Cornets, 69700 Givors", "secteur": "Givors", "stagiaires": "", "b1": "Très adapté", "b2": "Très adapté", "b3": "Adapté", "tel": "", "site": "https://www.lavieclaire.com", "notes": ""}]</script>
+<script id="app-config" type="application/json">{"version": 1, "codeHash": "460690052", "updated": "18/11/2026"}</script>
+<script>
+(function(){
+"use strict";
+// Le modèle du fichier, capturé avant toute modification de la page (pour l'export)
+var TEMPLATE = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+var ORIGINAL = JSON.parse(document.getElementById("store-data").textContent);
+var CONFIG = JSON.parse(document.getElementById("app-config").textContent);
+var LEVELS = ["Très adapté","Adapté","Peu adapté","À préciser"];
+var ZONES = ["Saint-Étienne","Rive-de-Gier & alentours","Saint-Chamond","Givors"];
+var KEY = "chasse-stages-v1-" + CONFIG.version;
+
+function store(k,v){try{ if(v===undefined) return localStorage.getItem(k); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,v);}catch(e){return null;}}
+var data = ORIGINAL;
+var draft = store(KEY+"-draft");
+if(draft){ try{ data = JSON.parse(draft); }catch(e){ data = ORIGINAL; } }
+data.forEach(function(s,i){ if(s.id==null) s.id = i+1; });
+var nextId = data.reduce(function(m,s){return Math.max(m,s.id);},0)+1;
+
+var $ = function(id){return document.getElementById(id);};
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function norm(t){return String(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");}
+function zoneList(){ var z = ZONES.slice(); data.forEach(function(s){ if(z.indexOf(s.zone)<0) z.push(s.zone); }); return z; }
+
+var EMO = {"Alimentaire":"🛒","Mode":"👗","Chaussures":"👟","Bijouterie":"💍","Beauté":"💄","Maison":"🛋️","Bricolage":"🔨","Sport":"⚽","Culture":"📚","Jouets":"🧸","High-tech":"📱","Téléphonie":"📱","Électroménager":"🔌","Discount":"🏷️","Jardin":"🌱","Enfant":"🍼"};
+function emoji(s){
+  var t = norm(s.categorie||s.famille);
+  if(/hyper|super|discount|alimen|epicerie|bio|frais|produc|superette|chocolat/.test(t)) return /chocolat/.test(t)?"🍫":"🛒";
+  if(/chauss|sneaker/.test(t)) return "👟";
+  if(/bijou|horlog/.test(t)) return "💍";
+  if(/lingerie/.test(t)) return "👙";
+  if(/sport/.test(t)) return "⚽";
+  if(/telephon/.test(t)) return "📱";
+  if(/high|electro|jeux video/.test(t)) return "🎮";
+  if(/librair|culture|presse|papet/.test(t)) return "📚";
+  if(/jouet|jeux/.test(t)) return "🧸";
+  if(/bricol|sols/.test(t)) return "🔨";
+  if(/jardin/.test(t)) return "🌱";
+  if(/meuble|deco|maison|cadeau|literie/.test(t)) return "🛋️";
+  if(/puericult|enfant/.test(t)) return "🍼";
+  if(/maroquin/.test(t)) return "👜";
+  if(/mariage/.test(t)) return "💐";
+  if(/mode|textile/.test(t)) return "👗";
+  return "🏪";
+}
+function stCls(v){v=norm(v); return v==="oui"?"st-oui":v==="non"?"st-non":"st-nsp";}
+function stTxt(v){v=norm(v); return v==="oui"?"✔ A déjà pris des stagiaires":v==="non"?"✖ N'a pas pris de stagiaires":"? Stagiaires : on ne sait pas";}
+function fitCls(v){return v==="Très adapté"?"f3":v==="Adapté"?"f2":v==="Peu adapté"?"f1":"f0";}
+function fitScore(s){var m={"Très adapté":3,"Adapté":2,"Peu adapté":1};return (m[s.b1]||0)+(m[s.b2]||0)+(m[s.b3]||0);}
+function telHref(t){return "tel:"+String(t).replace(/[^0-9+]/g,"");}
+function mapHref(s){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.nom+" "+s.adresse);}
+function safeUrl(u){u=String(u||"").trim(); if(!u) return ""; if(!/^https?:\/\//i.test(u)) u="https://"+u; return u;}
+
+/* ---------- Sélection élève ---------- */
+var sel = {}; try{ sel = JSON.parse(store(KEY+"-sel")||"{}")||{}; }catch(e){ sel={}; }
+function saveSel(){ store(KEY+"-sel", JSON.stringify(sel)); $("selCount").textContent = Object.keys(sel).length; }
+
+/* ---------- Carte ---------- */
+function card(s){
+  var tel = s.tel ? '<a class="a-tel" href="'+esc(telHref(s.tel))+'">📞 '+esc(s.tel)+'</a>' : '';
+  var web = s.site ? '<a class="a-web" href="'+esc(safeUrl(s.site))+'" target="_blank" rel="noopener">🌐 Site</a>' : '';
+  var map = '<a class="a-map" href="'+esc(mapHref(s))+'" target="_blank" rel="noopener">🗺️ '+(s.tel?'Carte':'Voir sur la carte (tél.)')+'</a>';
+  return '<div class="card flash"><button class="star'+(sel[s.id]?' on':'')+'" data-star="'+s.id+'" title="Ajouter à ma sélection">⭐</button>'+
+    '<div class="top"><div class="emoji">'+emoji(s)+'</div><div><h3>'+esc(s.nom)+'</h3><div class="cat">'+esc(s.categorie)+(s.famille?' · '+esc(s.famille):'')+'</div></div></div>'+
+    '<div class="addr">📍 '+esc(s.adresse)+(s.secteur?' <span style="color:var(--muted)">('+esc(s.secteur)+')</span>':'')+'</div>'+
+    '<div class="tags"><span class="tag zone">'+esc(s.zone)+'</span><span class="tag '+stCls(s.stagiaires)+'">'+stTxt(s.stagiaires)+'</span></div>'+
+    '<div class="fit"><div class="'+fitCls(s.b1)+'">B1 Commandes<br>'+esc(s.b1||"–")+'</div><div class="'+fitCls(s.b2)+'">B2 Mise en valeur<br>'+esc(s.b2||"–")+'</div><div class="'+fitCls(s.b3)+'">B3 Conseil<br>'+esc(s.b3||"–")+'</div></div>'+
+    (s.notes?'<div style="font-size:.85rem;background:#fff7e0;border-radius:10px;padding:6px 8px">📝 '+esc(s.notes)+'</div>':'')+
+    '<div class="actions">'+tel+web+map+'</div></div>';
+}
+
+/* ---------- Filtres ---------- */
+var F = {zones:{}, familles:{}, stag:{}, b1:"", b2:"", b3:"", q:"", onlyTel:false};
+function chips(el, values, bag){
+  el.innerHTML = values.map(function(v){return '<button class="chip'+(bag[v]?' on':'')+'" data-v="'+esc(v)+'">'+esc(v)+'</button>';}).join("");
+  el.onclick = function(e){ var b=e.target.closest(".chip"); if(!b) return; var v=b.getAttribute("data-v"); if(bag[v]) delete bag[v]; else bag[v]=1; b.classList.toggle("on"); render(); };
+}
+function buildFilters(){
+  chips($("zones"), zoneList(), F.zones);
+  var fams = []; data.forEach(function(s){ if(s.famille && fams.indexOf(s.famille)<0) fams.push(s.famille); }); fams.sort();
+  chips($("familles"), fams, F.familles);
+  chips($("stag"), ["oui","non","On ne sait pas"], F.stag);
+  ["b1","b2","b3"].forEach(function(k){ $(k).innerHTML = '<option value="">Peu importe</option><option value="3">Très adapté</option><option value="2">Adapté ou mieux</option>'; $(k).value=F[k]; });
+  $("famList").innerHTML = fams.map(function(f){return '<option value="'+esc(f)+'">';}).join("");
+}
+function lv(v){return v==="Très adapté"?3:v==="Adapté"?2:v==="Peu adapté"?1:0;}
+function filtered(){
+  var q = norm(F.q).split(/\s+/).filter(Boolean);
+  return data.filter(function(s){
+    if(Object.keys(F.zones).length && !F.zones[s.zone]) return false;
+    if(Object.keys(F.familles).length && !F.familles[s.famille]) return false;
+    if(Object.keys(F.stag).length){ var st=norm(s.stagiaires)==="oui"?"oui":norm(s.stagiaires)==="non"?"non":"On ne sait pas"; if(!F.stag[st]) return false; }
+    if(F.b1 && lv(s.b1)<+F.b1) return false;
+    if(F.b2 && lv(s.b2)<+F.b2) return false;
+    if(F.b3 && lv(s.b3)<+F.b3) return false;
+    if(F.onlyTel && !s.tel) return false;
+    if(q.length){ var hay = norm([s.nom,s.categorie,s.adresse,s.secteur,s.zone,s.notes].join(" ")); for(var i=0;i<q.length;i++) if(hay.indexOf(q[i])<0) return false; }
+    return true;
+  });
+}
+function render(){
+  var list = filtered().slice(), zl = zoneList(), sort = $("sort").value;
+  list.sort(function(a,b){
+    if(sort==="nom") return a.nom.localeCompare(b.nom,"fr");
+    if(sort==="fit") return fitScore(b)-fitScore(a) || a.nom.localeCompare(b.nom,"fr");
+    return zl.indexOf(a.zone)-zl.indexOf(b.zone) || 0;
+  });
+  $("count").innerHTML = "<b>"+list.length+"</b> magasin"+(list.length>1?"s":"")+" trouvé"+(list.length>1?"s":"")+" sur "+data.length;
+  $("grid").innerHTML = list.length ? list.map(card).join("") : '<div class="empty">😕 Aucun magasin ne correspond.<br>Essaie d\'enlever un filtre !</div>';
+}
+document.addEventListener("click", function(e){
+  var b = e.target.closest("[data-star]"); if(!b) return;
+  var id = +b.getAttribute("data-star");
+  if(sel[id]) delete sel[id]; else sel[id] = {pourquoi:"", appel:""};
+  saveSel(); document.querySelectorAll('[data-star="'+id+'"]').forEach(function(x){x.classList.toggle("on", !!sel[id]);});
+  if(!$("view-selection").classList.contains("hidden")) renderSel();
+});
+$("q").addEventListener("input", function(){F.q=this.value; render();});
+["b1","b2","b3"].forEach(function(k){ $(k).addEventListener("change", function(){F[k]=this.value; render();}); });
+$("onlyTel").addEventListener("change", function(){F.onlyTel=this.checked; render();});
+$("sort").addEventListener("change", render);
+$("reset").onclick = function(){ F={zones:{},familles:{},stag:{},b1:"",b2:"",b3:"",q:"",onlyTel:false}; $("q").value=""; $("onlyTel").checked=false; buildFilters(); render(); };
+
+/* ---------- Onglets ---------- */
+document.querySelectorAll(".tab").forEach(function(t){ t.onclick=function(){
+  document.querySelectorAll(".tab").forEach(function(x){x.classList.remove("on");}); t.classList.add("on");
+  ["search","mystery","selection","prof"].forEach(function(v){ $("view-"+v).classList.toggle("hidden", v!==t.getAttribute("data-view")); });
+  if(t.getAttribute("data-view")==="selection") renderSel();
+  if(t.getAttribute("data-view")==="search") render();
+};});
+
+/* ---------- Mystère ---------- */
+$("draw").onclick = function(){
+  var pool = $("useFilters").checked ? filtered() : data;
+  if(!pool.length){ $("mysteryOut").innerHTML='<div class="panel empty">Aucun magasin avec ces filtres 😕</div>'; return; }
+  var n=0, out=$("mysteryOut"), btn=this; btn.disabled=true;
+  var spin = setInterval(function(){
+    var s = pool[Math.floor(Math.random()*pool.length)];
+    out.innerHTML = '<div class="panel mystery"><div class="big">🎰</div><div><h3 style="margin:0">'+esc(s.nom)+'</h3><div style="color:var(--muted)">'+esc(s.zone)+'</div></div></div>';
+    if(++n>12){ clearInterval(spin); btn.disabled=false; out.innerHTML = '<div class="panel"><h3 style="margin-top:0">🎉 Ton magasin mystère :</h3><div class="grid" style="grid-template-columns:minmax(260px,480px)">'+card(s)+'</div></div>'; }
+  }, 80);
+};
+
+/* ---------- Ma sélection ---------- */
+$("eleve").value = store(KEY+"-eleve")||"";
+$("eleve").addEventListener("input", function(){ store(KEY+"-eleve", this.value); });
+function renderSel(){
+  var ids = Object.keys(sel).map(Number), items = data.filter(function(s){return ids.indexOf(s.id)>=0;});
+  $("printName").textContent = "Sélection de "+($("eleve").value||"…"); $("printName").classList.remove("hidden");
+  $("selList").innerHTML = items.length ? items.map(function(s){
+    var n = sel[s.id];
+    return '<div class="sel-item"><div><b>'+emoji(s)+' '+esc(s.nom)+'</b> — '+esc(s.categorie)+'<br><span style="font-size:.88rem">📍 '+esc(s.adresse)+(s.tel?' · 📞 '+esc(s.tel):'')+'</span>'+
+      '<div class="row" style="gap:10px"><div style="flex:1;min-width:220px"><small><b>Pourquoi cette entreprise ?</b></small><textarea data-note="'+s.id+'" data-f="pourquoi">'+esc(n.pourquoi)+'</textarea></div>'+
+      '<div style="flex:1;min-width:220px"><small><b>Résultat de mon appel / visite</b></small><textarea data-note="'+s.id+'" data-f="appel">'+esc(n.appel)+'</textarea></div></div></div>'+
+      '<div class="no-print"><button class="btn" data-star="'+s.id+'">Retirer</button></div></div>';
+  }).join("") : '<p class="empty">Ta sélection est vide. Clique sur ⭐ dans la recherche !</p>';
+}
+$("selList").addEventListener("input", function(e){ var t=e.target; if(!t.dataset.note) return; var s=sel[t.dataset.note]; if(s){ s[t.dataset.f]=t.value; saveSel(); } });
+$("clearSel").onclick = function(){ if(confirm("Vider toute ta sélection ?")){ sel={}; saveSel(); renderSel(); render(); } };
+
+/* ---------- Espace enseignant ---------- */
+function codeHash(c){ var h=5381; c=String(c); for(var i=0;i<c.length;i++){ h=((h<<5)+h+c.charCodeAt(i))|0; } return String(h); }
+$("unlock").onclick = function(){
+  if(codeHash($("code").value)===CONFIG.codeHash){ $("lock").classList.add("hidden"); $("profZone").classList.remove("hidden"); renderProf(); }
+  else $("codeMsg").textContent = "Code incorrect";
+};
+$("code").addEventListener("keydown", function(e){ if(e.key==="Enter") $("unlock").click(); });
+function isDirty(){ return !!store(KEY+"-draft") || draftMem; }
+var draftMem = false;
+function saveDraft(){ draftMem = true; store(KEY+"-draft", JSON.stringify(data)); $("dirty").innerHTML = '<span class="dirty">● Modifications non exportées — pensez à télécharger le logiciel mis à jour.</span>'; buildFilters(); render(); }
+function renderProf(){
+  if(isDirty()) $("dirty").innerHTML = '<span class="dirty">● Modifications non exportées — pensez à télécharger le logiciel mis à jour.</span>';
+  var q = norm($("pq").value), miss = $("missing").checked;
+  var rows = data.filter(function(s){ if(miss && s.tel) return false; return !q || norm([s.nom,s.categorie,s.adresse,s.zone].join(" ")).indexOf(q)>=0; });
+  $("ptable").innerHTML = rows.map(function(s){
+    return '<tr><td>'+esc(s.zone)+'</td><td><b>'+esc(s.nom)+'</b></td><td>'+esc(s.categorie)+'</td><td>'+esc(s.adresse)+'</td><td>'+esc(s.stagiaires)+'</td><td>'+(s.tel?esc(s.tel):'<span style="color:#a33b25">—</span>')+'</td><td>'+(s.site?'✔':'—')+'</td><td><button class="btn" data-edit="'+s.id+'">✏️</button></td></tr>';
+  }).join("");
+}
+$("pq").addEventListener("input", renderProf); $("missing").addEventListener("change", renderProf);
+$("ptable").addEventListener("click", function(e){ var b=e.target.closest("[data-edit]"); if(b) openEditor(+b.getAttribute("data-edit")); });
+var editing = null;
+function openEditor(id){
+  var f = $("edForm"); editing = id;
+  $("edZone").innerHTML = zoneList().map(function(z){return '<option>'+esc(z)+'</option>';}).join("");
+  f.querySelectorAll(".lvl").forEach(function(x){ x.innerHTML = LEVELS.map(function(l){return '<option>'+l+'</option>';}).join(""); });
+  var s = id==null ? {zone:ZONES[0],stagiaires:"On ne sait pas",b1:"À préciser",b2:"À préciser",b3:"À préciser"} : data.filter(function(x){return x.id===id;})[0];
+  ["nom","zone","famille","categorie","adresse","secteur","stagiaires","tel","site","b1","b2","b3","notes"].forEach(function(k){
+    var el=f.elements[k]; if(!el) return; var v=s[k]||"";
+    if(el.tagName==="SELECT" && v && ![].some.call(el.options,function(o){return o.value===v;})){ var o=document.createElement("option"); o.textContent=v; el.appendChild(o); }
+    el.value = v || (el.tagName==="SELECT"?el.options[0].value:"");
+  });
+  $("edTitle").textContent = id==null ? "➕ Nouveau magasin" : "✏️ Modifier : "+s.nom;
+  $("edDelete").classList.toggle("hidden", id==null);
+  $("editor").classList.remove("hidden"); $("editor").scrollIntoView({behavior:"smooth"});
+}
+$("addNew").onclick = function(){ openEditor(null); };
+$("edCancel").onclick = function(){ $("editor").classList.add("hidden"); };
+$("edForm").onsubmit = function(e){
+  e.preventDefault(); var f=this, rec={};
+  ["nom","zone","famille","categorie","adresse","secteur","stagiaires","tel","site","b1","b2","b3","notes"].forEach(function(k){ rec[k]=f.elements[k].value.trim(); });
+  if(editing==null){ rec.id = nextId++; data.push(rec); }
+  else { var s=data.filter(function(x){return x.id===editing;})[0]; Object.keys(rec).forEach(function(k){ s[k]=rec[k]; }); }
+  $("editor").classList.add("hidden"); saveDraft(); renderProf();
+};
+$("edDelete").onclick = function(){
+  if(editing==null) return; var s=data.filter(function(x){return x.id===editing;})[0];
+  if(!confirm("Supprimer « "+s.nom+" » ?")) return;
+  data = data.filter(function(x){return x.id!==editing;}); delete sel[editing]; saveSel();
+  $("editor").classList.add("hidden"); saveDraft(); renderProf();
+};
+$("discard").onclick = function(){ if(!confirm("Annuler toutes les modifications non exportées et revenir à la version du fichier ?")) return; store(KEY+"-draft",null); draftMem=false; data = JSON.parse(JSON.stringify(ORIGINAL)); data.forEach(function(s,i){ if(s.id==null) s.id=i+1; }); $("dirty").innerHTML=""; buildFilters(); render(); renderProf(); };
+$("chgCode").onclick = function(){ var c = prompt("Nouveau code enseignant (il sera actif dans le fichier téléchargé) :"); if(c){ CONFIG.codeHash = codeHash(c); draftMem = true; alert("Code modifié. Téléchargez le logiciel mis à jour pour l'enregistrer."); } };
+function download(name, content, type){
+  var blob = new Blob([content], {type:type}), a=document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function jsonForScript(o){ return JSON.stringify(o).replace(/</g,"\\u003c"); }
+$("exportHtml").onclick = function(){
+  var cfg = JSON.parse(JSON.stringify(CONFIG)); cfg.version = (+cfg.version||1)+1; cfg.updated = new Date().toLocaleDateString("fr-FR");
+  var html = TEMPLATE
+    .replace(/(<script id="store-data" type="application\/json">)[\s\S]*?(<\/script>)/, function(_,a,b){ return a+jsonForScript(data)+b; })
+    .replace(/(<script id="app-config" type="application\/json">)[\s\S]*?(<\/script>)/, function(_,a,b){ return a+jsonForScript(cfg)+b; });
+  download(/^https?:/.test(location.protocol) ? "index.html" : "Chasse_aux_stages_CAP_EPC.html", html, "text/html;charset=utf-8");
+  store(KEY+"-draft", null); draftMem=false; $("dirty").innerHTML = '<span style="color:#1d7a45;font-weight:700">✔ Fichier téléchargé : distribuez cette nouvelle version.</span>';
+};
+$("exportCsv").onclick = function(){
+  var cols=[["zone","Zone"],["nom","Enseigne"],["famille","Famille"],["categorie","Catégorie"],["adresse","Adresse"],["secteur","Secteur"],["stagiaires","A déjà pris des stagiaires"],["b1","Bloc 1"],["b2","Bloc 2"],["b3","Bloc 3"],["tel","Téléphone"],["site","Site internet"],["notes","Notes"]];
+  var lines=[cols.map(function(c){return c[1];}).join(";")].concat(data.map(function(s){ return cols.map(function(c){ return '"'+String(s[c[0]]||"").replace(/"/g,'""')+'"'; }).join(";"); }));
+  download("Repertoire_stages_export.csv", "﻿"+lines.join("\r\n"), "text/csv;charset=utf-8");
+};
+
+buildFilters(); saveSel(); render();
+})();
+</script>
+</body>
+</html>
